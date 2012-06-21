@@ -41,6 +41,7 @@ class MultiFileUpload(template.Node):
             'uploadify_query': unique_id,
             'uploadify_data': simplejson.dumps(data)[1:-1],
             'uploadify_path': settings.UPLOADIFY_PATH,
+            'uploadify_version': settings.UPLOADIFY_VERSION,
             'uploadify_options': js_options,
             'uploadify_filename': options['fileDataName'],
             'uploadify_auto': auto,
