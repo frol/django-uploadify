@@ -17,14 +17,14 @@
         $('#fileInput').uploadify({
             {% if uploadify_version == 2 %}
                 'uploader': '{{ uploadify_path }}uploadify.swf',
-                'script': '{% url uploadify_upload %}{{ uploadify_query }}',
+                'script': '{% url uploadify_upload %}{% if uploadify_query %}{{ uploadify_query }}{% endif %}',
                 'scriptData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
                 'onAllComplete': uploadify_allComplete,
                 'onComplete': uploadify_complete,
                 'onCancel': uploadify_cancelUpload,
             {% else %}
                 'swf': '{{ uploadify_path }}uploadify.swf',
-                'uploader': '{% url uploadify_upload %}{{ uploadify_query }}',
+                'uploader': '{% url uploadify_upload %}{% if uploadify_query %}{{ uploadify_query }}{% endif %}',
                 'formData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
                 'onQueueComplete': uploadify_allComplete,
                 'onUploadSuccess': uploadify_complete,
