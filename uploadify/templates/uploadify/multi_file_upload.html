@@ -8,22 +8,6 @@
 {% endif %}
 </div>
 <script type="text/javascript">// <![CDATA[
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
     $(document).ready(function() {
         if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) { //test for MSIE x.x;
             var ieversion=new Number(RegExp.$1) // capture x.x portion and store as a number
@@ -31,15 +15,24 @@
                 return;
         }
         $('#fileInput').uploadify({
-            'uploader': '{{ uploadify_path }}uploadify.swf',
-            'script': '{% url uploadify_upload %}{{ uploadify_query }}',
-            'scriptData': {'sessionid': getCookie('sessionid'), {{ uploadify_data|safe }}},
+            {% if uploadify_version == 2 %}
+                'uploader': '{{ uploadify_path }}uploadify.swf',
+                'script': '{% url uploadify_upload %}{{ uploadify_query }}',
+                'scriptData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
+                'onAllComplete': uploadify_allComplete,
+                'onComplete': uploadify_complete,
+                'onCancel': uploadify_cancelUpload,
+            {% else %}
+                'swf': '{{ uploadify_path }}uploadify.swf',
+                'uploader': '{% url uploadify_upload %}{{ uploadify_query }}',
+                'formData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
+                'onQueueComplete': uploadify_allComplete,
+                'onUploadSuccess': uploadify_complete,
+                'onCancel': uploadify_cancelUpload,
+            {% endif %}
             'cancelImg': '{{ uploadify_path }}cancel.png',
             'removeCompleted': false,
             'multi': true,
-            'onAllComplete': uploadify_allComplete,
-            'onCancel': uploadify_cancelUpload,
-            'onComplete': uploadify_complete,
             {{ uploadify_options|safe }}
         });
 
@@ -48,23 +41,45 @@
         });
     });
 
-    function uploadify_allComplete(event, data) {
-        $('#uploadify').trigger('allUploadsComplete', data);
-    }
-    function uploadify_cancelUpload(event, data) {
-        $('#uploadify').trigger('cancelUpload', data);
-    }
-    function uploadify_complete(event, ID, fileObj, response, data) {
-        var result = true;
-        response = $.parseJSON(response);
-        if (response.status == 'failed') {
-            var file_div = jQuery("#" + jQuery(event.target).attr('id') + ID);
-            file_div.addClass('uploadifyError');
-
-            file_div.find('.percentage').text(' - ' + response.status_msg);
-            result = false;
+    {% if uploadify_version == 2 %}
+        function uploadify_allComplete_old(event, data) {
+            $('#uploadify').trigger('allUploadsComplete', data);
         }
-        $('#uploadify').trigger('complete', [ID, fileObj, response, data]);
-        return result;
-    }
+        function uploadify_cancelUpload_old(event, data) {
+            $('#uploadify').trigger('cancelUpload', data);
+        }
+        function uploadify_complete_old(event, ID, fileObj, response, data) {
+            var result = true;
+            response = $.parseJSON(response);
+            if (response.status == 'failed') {
+                var file_div = jQuery("#" + jQuery(event.target).attr('id') + ID);
+                file_div.addClass('uploadifyError');
+
+                file_div.find('.percentage').text(' - ' + response.status_msg);
+                result = false;
+            }
+            $('#uploadify').trigger('complete', [ID, fileObj, response, data]);
+            return result;
+        }
+    {% else %}
+        function uploadify_allComplete(queueData) {
+            $('#uploadify').trigger('allUploadsComplete', queueData);
+        }
+        function uploadify_cancelUpload(file) {
+            $('#uploadify').trigger('cancelUpload', file);
+        }
+        function uploadify_complete(file, data, response) {
+            var result = true;
+            data = $.parseJSON(data);
+            if (data.status == 'failed') {
+                var file_div = jQuery("#" + file.id);
+                file_div.addClass('uploadify-error');
+
+                file_div.find('.data').text(' - ' + data.status_msg);
+                result = false;
+            }
+            $('#uploadify').trigger('complete', [file, data, response]);
+            return result;
+        }
+    {% endif %}
 // ]]></script>
