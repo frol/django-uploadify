@@ -1,9 +1,9 @@
-This branch aims to add support for the soon to be released Django 1.3.
+Works on Django >= 1.2 <= 1.5. Note that there is support of different Uploadify versions and UploadiFive.
 
 django-uploadify
 ================
 
-A "Django":http://www.djangoproject.com/ re-usable app to integrate "Uploadify":http://www.uploadify.com/.
+A "Django":http://www.djangoproject.com/ re-usable app to integrate "Uploadify and UploadiFive":http://www.uploadify.com/.
 
 .. contents::
 
@@ -18,9 +18,13 @@ Installing django-uploadify
     pip install git+git://github.com/frol/django-uploadify.git
 
 #) Add 'uploadify' to your INSTALLED_APPS in your project's settings.py file
+#) There is support of Uploadify 2 (default), Uploadify 3 and UploadiFive v1.1.1.
+You can decide what version you would like to use by settings option UPLOADIFY_VERSION,
+available values are 2 (just int), 3 (just int) and 'uploadifive'.
 #) Add a reference to uploadify in your urls.py... ::
 
     (r'^uploadify/', include('uploadify.urls')),
+
 
 Installing Uploadify
 --------------------
@@ -70,7 +74,7 @@ Creating a signal receiver... ::
             return {'status': 'ok', 'url': photo.get_preview_url()}
         raise Http404
 
-    upload_recieved.connect(upload_received_handler, dispatch_uid='yourapp.whatever.upload_received')
+    upload_received.connect(upload_received_handler, dispatch_uid='yourapp.whatever.upload_received')
 
 
 Reference

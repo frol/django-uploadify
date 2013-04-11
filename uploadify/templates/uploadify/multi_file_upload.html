@@ -1,6 +1,8 @@
-<script type="text/javascript" src="{{ uploadify_path }}swfobject.js"></script>
-<script type="text/javascript" src="{{ uploadify_path }}jquery.uploadify.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ uploadify_path }}uploadify.css" />
+<!--script type="text/javascript" src="{{ uploadify_path }}swfobject.js"></script>
+<script type="text/javascript" src="{{ uploadify_path }}jquery.uploadify.js"></script-->
+<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.js"></script>
+<!link rel="stylesheet" type="text/css" href="{{ uploadify_path }}uploadify.css" />
+<link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css" />
 <div id="uploadify" class="multi_file_upload">
 <input id="fileInput" name="fileInput" type="file" />
 {% if not uploadify_auto %}
@@ -14,20 +16,29 @@
             if (ieversion < 8)
                 return;
         }
-        $('#fileInput').uploadify({
+        {% if uploadify_version == 'uploadifive' %}
+            $('#fileInput').uploadifive({
+        {% else %}
+            $('#fileInput').uploadify({
+        {% endif %}
             {% if uploadify_version == 2 %}
                 'uploader': '{{ uploadify_path }}uploadify.swf',
-                'script': '{% url uploadify_upload %}{% if uploadify_query %}{{ uploadify_query }}{% endif %}',
+                'script': '{% url uploadify_upload %}{{ uploadify_query }}',
                 'scriptData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
                 'onAllComplete': uploadify_allComplete,
                 'onComplete': uploadify_complete,
                 'onCancel': uploadify_cancelUpload,
             {% else %}
-                'swf': '{{ uploadify_path }}uploadify.swf',
-                'uploader': '{% url uploadify_upload %}{% if uploadify_query %}{{ uploadify_query }}{% endif %}',
+                {% if uploadify_version == 'uploadifive'%}
+                    'uploadScript': '{% url uploadify_upload %}{{ uploadify_query }}',
+                    'onUploadComplete': uploadify_complete,
+                {% else %}
+                    'swf': '{{ uploadify_path }}uploadify.swf',
+                    'uploader': '{% url uploadify_upload %}{{ uploadify_query }}',
+                    'onUploadSuccess': uploadify_complete,
+                {% endif %}
                 'formData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
                 'onQueueComplete': uploadify_allComplete,
-                'onUploadSuccess': uploadify_complete,
                 'onCancel': uploadify_cancelUpload,
             {% endif %}
             'cancelImg': '{{ uploadify_path }}cancel.png',
@@ -63,20 +74,27 @@
         }
     {% else %}
         function uploadify_allComplete(queueData) {
+            alert('All complete');
             $('#uploadify').trigger('allUploadsComplete', queueData);
         }
         function uploadify_cancelUpload(file) {
+            alert('Cancel');
             $('#uploadify').trigger('cancelUpload', file);
         }
         function uploadify_complete(file, data, response) {
+            alert('complete: ' + file + ' / ' + data + ' / ' + response);
             var result = true;
             data = $.parseJSON(data);
             if (data.status == 'failed') {
-                var file_div = jQuery("#" + file.id);
-                file_div.addClass('uploadify-error');
-
-                file_div.find('.data').text(' - ' + data.status_msg);
-                result = false;
+                {% if uploadify_version == 'uploadifive' %}
+                    file.queueItem.find('.fileinfo').html(' - ' +data.status_msg);
+                    file.queueItem.addClass('error');
+                {% else %}
+                    var file_div = jQuery("#" + file.id);
+                    file_div.addClass('uploadify-error');
+                    file_div.find('.data').text(' - ' + data.status_msg);
+                    result = false;
+                {% endif %}
             }
             $('#uploadify').trigger('complete', [file, data, response]);
             return result;
