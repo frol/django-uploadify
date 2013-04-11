@@ -74,15 +74,12 @@
         }
     {% else %}
         function uploadify_allComplete(queueData) {
-            alert('All complete');
             $('#uploadify').trigger('allUploadsComplete', queueData);
         }
         function uploadify_cancelUpload(file) {
-            alert('Cancel');
             $('#uploadify').trigger('cancelUpload', file);
         }
         function uploadify_complete(file, data, response) {
-            alert('complete: ' + file + ' / ' + data + ' / ' + response);
             var result = true;
             data = $.parseJSON(data);
             if (data.status == 'failed') {
