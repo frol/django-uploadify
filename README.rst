@@ -18,9 +18,7 @@ Installing django-uploadify
     pip install git+git://github.com/frol/django-uploadify.git
 
 #) Add 'uploadify' to your INSTALLED_APPS in your project's settings.py file
-#) There is support of Uploadify 2 (default), Uploadify 3 and UploadiFive v1.1.1.
-You can decide what version you would like to use by settings option UPLOADIFY_VERSION,
-available values are 2 (just int), 3 (just int) and 'uploadifive'.
+#) There is support of Uploadify 2 (default), Uploadify 3 and UploadiFive v1.1.1. You can decide what version you would like to use by settings option UPLOADIFY_VERSION, available values are 2 (just int), 3 (just int) and 'uploadifive'.
 #) Add a reference to uploadify in your urls.py... ::
 
     (r'^uploadify/', include('uploadify.urls')),
