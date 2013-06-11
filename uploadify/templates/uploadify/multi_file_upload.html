@@ -23,18 +23,18 @@
         {% endif %}
             {% if uploadify_version == 2 %}
                 'uploader': '{{ uploadify_path }}uploadify.swf',
-                'script': '{% url uploadify_upload %}{{ uploadify_query }}',
+                'script': '{% url "uploadify_upload" %}{{ uploadify_query }}',
                 'scriptData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
                 'onAllComplete': uploadify_allComplete,
                 'onComplete': uploadify_complete,
                 'onCancel': uploadify_cancelUpload,
             {% else %}
                 {% if uploadify_version == 'uploadifive'%}
-                    'uploadScript': '{% url uploadify_upload %}{{ uploadify_query }}',
+                    'uploadScript': '{% url "uploadify_upload" %}{{ uploadify_query }}',
                     'onUploadComplete': uploadify_complete,
                 {% else %}
                     'swf': '{{ uploadify_path }}uploadify.swf',
-                    'uploader': '{% url uploadify_upload %}{{ uploadify_query }}',
+                    'uploader': '{% url "uploadify_upload" %}{{ uploadify_query }}',
                     'onUploadSuccess': uploadify_complete,
                 {% endif %}
                 'formData': {'sessionid': '{{ request.session.session_key }}', {{ uploadify_data|safe }}},
