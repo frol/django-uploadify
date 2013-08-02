@@ -1,13 +1,16 @@
-<!--script type="text/javascript" src="{{ uploadify_path }}swfobject.js"></script>
-<script type="text/javascript" src="{{ uploadify_path }}jquery.uploadify.js"></script-->
-<script type="text/javascript" src="/static/uploadifive/jquery.uploadifive.js"></script>
-<!link rel="stylesheet" type="text/css" href="{{ uploadify_path }}uploadify.css" />
-<link rel="stylesheet" type="text/css" href="/static/uploadifive/uploadifive.css" />
-<div id="uploadify" class="multi_file_upload">
-<input id="fileInput" name="fileInput" type="file" />
-{% if not uploadify_auto %}
-<input type="button" value="Upload" id="upload" />
+{% if uploadify_version == 'uploadifive' %}
+    <script type="text/javascript" src="{{ uploadify_path }}jquery.uploadifive.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ uploadify_path }}uploadifive.css" />
+{% else %}
+    <script type="text/javascript" src="{{ uploadify_path }}swfobject.js"></script>
+    <script type="text/javascript" src="{{ uploadify_path }}jquery.uploadify.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ uploadify_path }}uploadify.css" />
 {% endif %}
+<div id="uploadify" class="multi_file_upload">
+    <input id="fileInput" name="fileInput" type="file" />
+    {% if not uploadify_auto %}
+        <input type="button" value="Upload" id="upload" />
+    {% endif %}
 </div>
 <script type="text/javascript">// <![CDATA[
     $(document).ready(function() {

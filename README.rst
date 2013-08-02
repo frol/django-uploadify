@@ -1,4 +1,4 @@
-Works on Django >= 1.2 <= 1.5. Note that there is support of different Uploadify versions and UploadiFive.
+Works on Django >= 1.2 <= 1.6. Note that there is support of different Uploadify versions and UploadiFive.
 
 django-uploadify
 ================
