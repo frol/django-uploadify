@@ -46,7 +46,6 @@
             {% endif %}
             'cancelImg': '{{ uploadify_path }}cancel.png',
             'removeCompleted': false,
-            'multi': true,
             {{ uploadify_options|safe }}
         });
 
@@ -93,8 +92,8 @@
                     var file_div = jQuery("#" + file.id);
                     file_div.addClass('uploadify-error');
                     file_div.find('.data').text(' - ' + data.status_msg);
-                    result = false;
                 {% endif %}
+                result = false;
             }
             $('#uploadify').trigger('complete', [file, data, response]);
             return result;

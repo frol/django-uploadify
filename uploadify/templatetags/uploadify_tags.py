@@ -26,11 +26,11 @@ class MultiFileUpload(Node):
 
     def build_context(self, unique_id, data, options, auto):
         return {
-            'uploadify_query': unique_id,
+            'uploadify_query': ("?unique_id=%s" % unique_id) if unique_id else "",
             'uploadify_data': simplejson.dumps(data)[1:-1],
             'uploadify_path': settings.UPLOADIFY_PATH,
             'uploadify_version': settings.UPLOADIFY_VERSION,
-            'uploadify_options': ','.join(("'%s': '%s'" % (item[0], item[1])
+            'uploadify_options': ','.join(("'%s': %s" % (item[0], item[1])
                                             for item in options.items())),
             'uploadify_filename': options['fileDataName'],
             'uploadify_auto': auto,
@@ -39,8 +39,6 @@ class MultiFileUpload(Node):
     def render(self, context):
         if self.unique_id is not None:
             unique_id = "?unique_id=%s" % str(resolve_variable(self.unique_id, context))
-        else:
-            unique_id = ""
 
         options = {'fileDataName': 'Filedata'}
         for key, value in self.options.items():
@@ -55,6 +53,7 @@ class MultiFileUpload(Node):
         for key, value in self.data.items():
             data[key] = resolve_variable(value, context)
 
+        options['fileDataName'] = '"%s"' % options['fileDataName']
         context.update(self.build_context(unique_id, data, options, auto))
 
         return render_to_string('uploadify/multi_file_upload.html', context)
@@ -112,6 +111,7 @@ if is_coffin:
         if data:
             _data.update(data)
 
+        options['fileDataName'] = '"%s"' % options['fileDataName']
         multi_file_upload = MultiFileUpload(sender, unique_id, data, **options)
         return Markup(coffin_render_to_string('uploadify/multi_file_upload.html',
             dict(multi_file_upload.build_context(unique_id, _data, options, auto), request=request)))
