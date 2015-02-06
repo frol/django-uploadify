@@ -38,7 +38,9 @@ class MultiFileUpload(Node):
 
     def render(self, context):
         if self.unique_id is not None:
-            unique_id = "?unique_id=%s" % str(resolve_variable(self.unique_id, context))
+            unique_id = str(resolve_variable(self.unique_id, context)
+        else:
+            unique_id = None
 
         options = {'fileDataName': 'Filedata'}
         for key, value in self.options.items():
