@@ -1,7 +1,8 @@
+import json
+
 from django.conf import settings as django_settings
 from django.template import Node, resolve_variable
 from django.template.loader import render_to_string
-from django.utils import simplejson
 
 if 'coffin' in django_settings.INSTALLED_APPS:
     from coffin.template import Library
@@ -27,7 +28,7 @@ class MultiFileUpload(Node):
     def build_context(self, unique_id, data, options, auto):
         return {
             'uploadify_query': ("?unique_id=%s" % unique_id) if unique_id else "",
-            'uploadify_data': simplejson.dumps(data)[1:-1],
+            'uploadify_data': json.dumps(data)[1:-1],
             'uploadify_path': settings.UPLOADIFY_PATH,
             'uploadify_version': settings.UPLOADIFY_VERSION,
             'uploadify_options': ','.join(("'%s': %s" % (item[0], item[1])
